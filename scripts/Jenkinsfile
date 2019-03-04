@@ -5,7 +5,7 @@ pipeline
   agent none
   parameters
   {
-    string (defaultValue: 'heads/master', description: 'tags/<tag> or heads/<branch>', name: 'BUILD')
+    string (defaultValue: 'heads/demo', description: 'tags/<tag> or heads/<branch>', name: 'BUILD')
     booleanParam (defaultValue: false, description: 'Initialize Job Parameters', name: 'InitJob')
     choice (choices: ['x86_64','arm64','arm32', 'all'], description: 'Build Architecture', name: 'Arch')
   }

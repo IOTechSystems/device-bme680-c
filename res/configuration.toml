@@ -30,7 +30,7 @@
 
 [Logging]
   RemoteURL = ""
-  File = "./device-bme680.log"
+  File = "-"
 
 [[Schedules]]
   Name = "Schedule_bme680"
