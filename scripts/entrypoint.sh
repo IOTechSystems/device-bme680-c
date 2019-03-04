@@ -1,2 +1,2 @@
 #!/bin/sh
-./device-bme680 --confdir=/res
+./device-bme680 --confdir /res

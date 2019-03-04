@@ -1,6 +1,6 @@
 [Service]
-  Host = "localhost"
-  Port = 49991
+  Host = "edgex-device-bme680"
+  Port = 49802
   ConnectRetries = 3
   HealthCheck = ""
   StartupMsg = "device BME680 started"
@@ -9,11 +9,11 @@
 
 [Clients]
   [Clients.Data]
-    Host = "localhost"
+    Host = "edgex-core-data"
     Port = 48080
 
   [Clients.Metadata]
-    Host = "localhost"
+    Host = "edgex-core-metadata"
     Port = 48081
 
 [Device]
@@ -34,22 +34,25 @@
 
 [[Schedules]]
   Name = "Schedule_bme680"
-  Frequency = "PT2S"
+  Frequency = "PT5S"
 
 [[ScheduleEvents]]
   Name = "Temperature"
   Schedule = "Schedule_bme680"
-  Path = "/api/v1/device/all/Get_Temperature"
+  [ScheduleEvents.Addressable]
+    Path = "/api/v1/device/all/Get_Temperature"
 
 [[ScheduleEvents]]
   Name = "Humidity"
   Schedule = "Schedule_bme680"
-  Path = "/api/v1/device/all/Get_Humidity"
+  [ScheduleEvents.Addressable]
+    Path = "/api/v1/device/all/Get_Humidity"
 
 [[ScheduleEvents]]
   Name = "Pressure"
   Schedule = "Schedule_bme680"
-  Path = "/api/v1/device/all/Get_Pressure"
+  [ScheduleEvents.Addressable]
+    Path = "/api/v1/device/all/Get_Pressure"
 
 [[DeviceList]]
   Name = "BME680Device"
