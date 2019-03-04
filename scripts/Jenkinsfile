@@ -1,0 +1,159 @@
+#!/usr/bin/env groovy
+
+pipeline
+{
+  agent none
+  parameters
+  {
+    string (defaultValue: 'heads/master', description: 'tags/<tag> or heads/<branch>', name: 'BUILD')
+    booleanParam (defaultValue: false, description: 'Initialize Job Parameters', name: 'InitJob')
+    choice (choices: ['x86_64','arm64','arm32', 'all'], description: 'Build Architecture', name: 'Arch')
+  }
+  stages
+  {
+    stage ('Initialize')
+    {
+      steps
+      {
+        script
+        {
+          if ("${params.InitJob}" == "true")
+          {
+            currentBuild.result = 'ABORTED'
+            error ('DRY RUN COMPLETED. JOB PARAMETERIZED.')
+          }
+        }
+      }
+    }
+    stage ('All')
+    {
+      parallel
+      {
+        stage ('Build x86_64')
+        {
+          when { expression { return ("${params.Arch}" == "x86_64" || "${params.Arch}" == "all") }}
+          agent { label 'docker-x86_64' }
+          stages
+          {
+            stage ('Checkout x86_64')
+            {
+              steps
+              {
+                cleanWs ()
+                checkout scm
+                script
+                {
+                  currentBuild.displayName = "Docker-Demo-Device-BME680-C X86_64: ${env.BUILD_ID}"
+                } 
+              }
+            }
+            stage ('Build x86_64')
+            {
+              steps
+              {
+                script
+                {
+                  sh "./scripts/dockerize.sh"
+                }
+              }
+            }
+            stage ('Clean x86_64')
+            {
+              steps
+              {
+                script
+                {
+                  sh "./scripts/clean.sh"
+                }
+                cleanWs ()
+              }
+            }
+          }
+        }
+        stage ('Build arm64')
+        {
+          when { expression { return ("${params.Arch}" == "arm64" || "${params.Arch}" == "all") }}
+          agent { label 'docker-arm64' }
+          stages
+          {
+            stage ('Checkout arm64')
+            {
+              steps
+              {
+                cleanWs ()
+                checkout scm
+                script
+                {
+                  currentBuild.displayName = "Docker-Demo-Device-BME680-C arm64: ${env.BUILD_ID}"
+                } 
+              }
+            }
+            stage ('Build arm64')
+            {
+              steps
+              {
+                script
+                {
+                  sh "./scripts/dockerize.sh"
+                }
+              }
+            }
+            stage ('Clean arm64')
+            {
+              steps
+              {
+                script
+                {
+                  sh "./scripts/clean.sh"
+                }
+                cleanWs ()
+              }
+            }
+          }
+        }  
+        stage ('Build arm32')
+        {
+          when { expression { return ("${params.Arch}" == "arm32" || "${params.Arch}" == "all") }}
+          agent { label 'docker-arm' }
+          stages
+          {
+            stage ('Checkout arm32')
+            {
+              steps
+              {
+                cleanWs ()
+                checkout scm
+                script
+                {
+                  currentBuild.displayName = "Docker-Demo-Device-BME680-C arm32: ${env.BUILD_ID}"
+                } 
+              }
+            }
+            stage ('Build arm32')
+            {
+              steps
+              {
+                script
+                {
+                  sh "./scripts/dockerize.sh"
+                }
+              }
+            }
+            stage ('Clean arm32')
+            {
+              steps
+              {
+                script
+                {
+                  sh "./scripts/clean.sh"
+                }
+                cleanWs ()
+              }
+            }
+          }
+        }
+        
+      }
+    }
+  }
+}

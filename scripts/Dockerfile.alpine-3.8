@@ -1,0 +1,28 @@
+FROM alpine:3.8 as builder
+MAINTAINER Tom Fleming <tom@iotechsys.com>
+RUN echo https://iotech.jfrog.io/iotech/alpine/alpine-3.8/ >> /etc/apk/repositories
+RUN wget https://iotech.jfrog.io/iotech/alpine/KEY/support@iotechsys.com-5b990dd9.pub -O /etc/apk/keys/support@iotechsys.com-5b990dd9.pub
+RUN apk add --update --no-cache build-base git gcc cmake make linux-headers edgex-c-sdk=0.7.2-r0 yaml libmicrohttpd wget mbedtls-dev python3 py-six
+
+
+COPY scripts /device-bme/scripts
+COPY src /device-bme/src
+
+WORKDIR /device-bme
+RUN scripts/build.sh
+
+FROM alpine:3.8
+
+RUN apk add --update --no-cache linux-headers yaml libmicrohttpd curl-dev mbedtls
+
+COPY --from=builder /device-bme/build/release/device-bme680 /.
+COPY --from=builder /usr/lib/libcsdk.so /usr/lib
+COPY --from=builder /usr/include/edgex /usr/include/edgex
+COPY --from=builder /usr/include/thpool.h /usr/include/thpool.h
+COPY --from=builder /usr/include/iot /usr/include/iot
+
+COPY res /res
+
+COPY --from=builder /device-bme/scripts/entrypoint.sh /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
