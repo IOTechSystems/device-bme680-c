@@ -175,11 +175,11 @@ static bool bme680_gethandler
   pthread_mutex_unlock (&driver->mutex);
 
   readings[0].type = Float32;
-  if (strcmp (requests[0].devobj->name, "Temperature") ==0 )
+  if (strcmp (requests[0].devobj->name, "BMETemperature") ==0 )
             readings[0].value.f32_result = (float) data.temperature / 100.0f;
-  else if (strcmp (requests[0].devobj->name, "Humidity") ==0 )
+  else if (strcmp (requests[0].devobj->name, "BMEHumidity") ==0 )
             readings[0].value.f32_result = (float) data.humidity / 1000.0f;
-  else if (strcmp (requests[0].devobj->name, "Pressure") ==0 )
+  else if (strcmp (requests[0].devobj->name, "BMEPressure") ==0 )
             readings[0].value.f32_result = (float) data.pressure / 100.0f;
 
   return true;
